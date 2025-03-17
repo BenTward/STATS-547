@@ -1,0 +1,81 @@
+Choose the best description of your background.,Choose the option that best describes you.,How many human languages do you speak?,What do you plan to do after your program?,"In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Linear Algebra]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Singular Value Decomposition]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Graph Theory]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Machine Learning]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Dimension Reduction]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Dynamical Systems]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Control Theory]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Topological Data Analysis]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Tensors and Hypergraphs]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Data Visualization]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Working with Real Data]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [Programming (MATLAB/Python)]","In this section, please indicate how excited you are by the following topics. 1 indicates ""not excited"" and 5 indicates ""very excited"" [LaTeX]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [Linear Algebra Fundamentals]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [Computational Linear Algebra]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [Eigenvalues and Eigenvectors]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [Differential Equations]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [MATLAB Programming]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [Python Programming]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [R Programming]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [LaTeX]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [Working with Real-World Data]","In this section please indicate how comfortable you are with the following topics. 1 indicates ""beginner"" and 5 indicates ""expert."" (Note: Proficiency in every category is not a barrier to entry for this course.) [Data Visualization]"
+Mathematics/Statistics,Undergraduate Student,3,Go to Industry,3,3,1,3,1,1,1,1,1,4,4,4,3,4,2,4,4,4,4,4,4,4,4
+Mathematics/Statistics,Masters Student,2,Go to Industry,4,4,4,5,3,3,2,2,4,4,5,4,4,4,5,4,5,3,5,4,5,5,5
+Mathematics/Statistics,Masters Student,1,Go to Academia,4,4,4,5,4,5,3,4,4,4,4,5,4,4,4,4,4,5,4,2,5,3,2
+Mathematics/Statistics,Undergraduate Student,1,Do a Masters or PhD Program,4,2,2,2,2,2,2,2,2,4,4,4,2,3,2,2,2,1,3,4,1,3,2
+Engineering,Masters Student,1,Go to Industry,4,3,3,5,4,3,3,3,3,5,5,5,3,3,2,4,5,5,4,4,1,3,4
+Mathematics/Statistics,Undergraduate Student,2,Go to Industry,4,5,3,3,4,4,3,3,3,5,5,5,5,3,3,3,2,1,4,5,5,5,4
+Mathematics/Statistics,Undergraduate Student,1,Do a Masters or PhD Program,4,3,4,4,3,2,2,1,2,5,5,4,2,5,3,5,1,1,4,4,1,4,4
+Mathematics/Statistics,Undergraduate Student,3,Do a Masters or PhD Program,2,3,5,5,5,5,5,5,4,5,3,2,3,5,2,4,3,2,4,5,5,4,4
+Engineering,Masters Student,1,Go to Industry,4,2,3,5,3,4,4,4,2,5,5,4,2,4,3,3,3,4,2,1,1,4,5
+Mathematics/Statistics,Undergraduate Student,2,Do a Masters or PhD Program,3,2,2,5,2,2,2,2,3,3,5,4,2,3,2,2,2,1,3,4,3,3,4
+Computer Science,Undergraduate Student,2,Do a Masters or PhD Program,4,4,4,5,4,4,4,4,5,5,5,5,3,4,3,3,4,2,4,4,4,4,4
+Mathematics/Statistics,Masters Student,2,Do a Masters or PhD Program,4,3,3,2,4,3,3,5,4,3,2,1,2,4,1,4,4,1,1,2,1,1,1
+Mathematics/Statistics,Undergraduate Student,2,Do a Masters or PhD Program,1,1,3,3,3,2,3,2,2,2,3,3,1,3,3,3,3,3,4,4,2,2,2
+Mathematics/Statistics,Undergraduate Student,2,Go to Industry,1,3,3,4,3,3,4,3,4,4,5,4,1,3,3,3,1,1,3,3,2,3,3
+Computer Science,Undergraduate Student,1,Go to Industry,3,3,5,5,3,3,3,3,3,5,5,5,2,1,3,1,1,4,4,2,4,4,2
+Mathematics/Physics,Doctoral Student,1,"Not sure, I don't mind the details as long as I can do cool research",5,4,4,3,5,5,3,4,4,5,3,3,3,5,4,5,5,4,4,1,5,3,3
+Mathematics/Statistics,Undergraduate Student,1,JD program,5,3,2,4,3,3,3,2,4,3,5,3,4,3,3,3,1,1,1,4,4,3,1
+Biology/Bioinformatics,Doctoral Student,3,Regulatory (FDA),3,3,3,5,4,3,3,5,4,5,5,4,2,4,3,3,2,3,4,5,3,5,5
+Mathematics/Statistics,Masters Student,2,Go to Industry,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,3,1,1,5,1,1
+Data Science (Engineering),Undergraduate Student,2,Do a Masters or PhD Program,4,4,3,5,3,3,2,2,3,4,4,5,5,4,4,4,4,4,5,3,4,3,3
+Mathematics/Statistics,Undergraduate Student,2,Do a Masters or PhD Program,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+Engineering,Masters Student,3,Go to Industry,4,4,3,4,3,3,4,4,3,4,5,4,3,3,2,2,3,2,2,1,3,2,2
+Mathematics/Statistics,Undergraduate Student,2,Do a Masters or PhD Program,5,3,3,3,2,3,3,2,2,4,5,4,5,4,4,4,4,2,3,3,4,5,4
+Engineering,Masters Student,2,Go to Industry,5,5,5,5,4,3,4,4,5,4,5,5,4,4,4,4,4,4,4,1,3,3,3
+Engineering,Masters Student,2,Go to Industry,5,5,5,5,5,5,5,5,5,5,5,5,5,1,1,1,1,1,1,1,1,1,1
+Biology/Bioinformatics,Doctoral Student,2,Go to Industry,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+Engineering,Doctoral Student,1,Go to Academia,4,4,4,4,4,4,3,3,4,3,3,4,3,3,2,5,5,3,2,2,1,1,1
+Mathematics/Statistics,Masters Student,1,Go to Industry,3,3,3,4,3,3,3,3,3,4,5,4,4,3,3,3,3,1,4,4,4,3,3
+Biochemistry and Statistics,Undergraduate Student,2,Do a Masters or PhD Program,4,5,5,5,1,5,5,5,5,5,5,5,4,3,3,3,3,1,1,3,3,4,4
+Engineering,Masters Student,2,Do a Masters or PhD Program,3,2,4,5,5,3,3,2,3,5,4,5,5,3,2,3,3,5,4,1,4,4,4
+Biology/Bioinformatics,Doctoral Student,2,Go to Industry,2,3,3,5,5,5,5,4,4,5,5,5,3,1,1,3,3,3,4,5,3,5,5
+Engineering,Masters Student,1,Go to Industry,4,2,2,1,3,3,3,3,2,4,4,4,4,4,3,4,3,4,1,1,3,1,1
+Engineering,Doctoral Student,2,Go to Industry,5,4,4,5,5,2,3,4,5,5,5,5,4,4,3,3,4,1,5,1,2,5,4
+Computer Science,Undergraduate Student,3,Go to Industry,3,4,5,5,5,4,5,5,5,3,5,5,4,5,5,5,3,5,5,3,4,5,5
+Acoustics,Doctoral Student,2,Go to Industry,5,5,4,5,5,5,3,3,4,4,5,1,1,4,4,3,3,1,5,1,3,5,3
+Mathematics/Statistics,Masters Student,2,Go to Industry,5,5,5,5,5,5,5,5,5,5,5,5,5,5,3,5,5,3,1,1,3,1,1
+Engineering,Doctoral Student,2,Go to Academia,2,2,3,3,3,3,2,3,2,3,3,3,3,3,1,4,4,4,1,1,4,1,1
+Computer Science,Undergraduate Student,2,Either industry or a masters,4,4,4,4,4,3,3,3,3,3,2,3,2,4,3,3,3,2,4,3,4,4,4
+Mathematics/Statistics,Undergraduate Student,4,Both Industry or a Masters or PhD program. I have more preference on pursuing a PhD/Masters,3,3,2,4,3,4,4,4,4,4,4,3,2,4,3,4,4,1,2,2,3,2,2
+Engineering,Doctoral Student,2,Go to Industry,4,3,3,5,5,3,3,3,5,5,5,5,5,5,4,2,4,2,4,1,1,3,1
+Mathematics/Statistics,Masters Student,2,Do a Masters or PhD Program,4,4,4,4,4,4,3,4,3,3,3,3,3,4,4,4,3,3,4,4,4,4,3
+Computer Science,Masters Student,3,Do a Masters or PhD Program,5,5,4,5,4,4,5,3,5,1,5,1,1,5,5,3,4,5,5,5,5,5,5
+Biology/Bioinformatics,Undergraduate Student,2,Do a Masters or PhD Program,4,3,4,5,5,4,3,3,3,5,5,5,2,3,2,3,3,4,4,3,1,3,3
+Mathematics/Statistics,Undergraduate Student,3,Do a Masters or PhD Program,4,4,4,2,4,2,2,1,4,3,3,2,3,4,3,3,2,1,4,4,4,3,3
+Biology/Bioinformatics,Doctoral Student,2,I am not sure yet!,1,3,3,5,3,5,3,5,5,5,3,3,1,2,2,2,2,2,3,4,2,4,4
+Engineering,Masters Student,1,Go to Industry,3,3,3,5,3,4,5,3,3,5,5,4,4,3,3,3,3,4,4,1,1,3,3
+Engineering,Masters Student,1,Go to Industry,4,3,3,5,4,5,5,3,3,3,4,5,5,4,4,4,5,5,2,1,2,3,1
+Computer Science,Undergraduate Student,1,Go to Industry,5,5,5,5,5,4,3,5,5,5,5,5,5,3,2,2,1,1,4,3,1,3,2
+Mathematics/Statistics,Undergraduate Student,1,Go to Industry,4,4,5,5,4,4,5,5,5,4,5,3,2,2,1,2,1,2,3,3,3,3,2
+Biology/Bioinformatics,Undergraduate Student,3,Do a Masters or PhD Program,4,2,3,4,3,3,4,3,3,4,4,4,2,3,2,3,1,2,2,3,1,3,4
+Computer Science,Masters Student,3,Go to Industry,3,3,3,4,4,3,3,4,3,5,5,4,3,3,2,2,2,2,3,4,1,1,2
+Engineering,Masters Student,2,Do a Masters or PhD Program,4,3,5,4,4,5,4,5,5,5,5,3,3,5,4,4,4,3,4,2,4,3,3
+Mathematics/Statistics,Masters Student,2,Go to Industry,3,3,3,5,5,3,3,3,3,3,5,3,3,5,4,5,4,2,5,2,3,5,5
+Mathematics/Statistics,Masters Student,2,Do a Masters or PhD Program,3,2,3,3,3,3,5,5,3,2,2,2,2,3,3,2,2,1,3,2,2,2,3
+Engineering,Masters Student,2,Go to Industry,3,5,5,5,5,5,5,2,4,5,5,5,3,4,4,4,2,5,3,1,5,2,2
+Engineering,Masters Student,2,Go to Industry,3,3,4,5,3,3,2,4,4,3,2,1,1,4,4,4,5,5,3,1,1,4,3
+Engineering,Undergraduate Student,1,Go to Industry,3,3,3,3,3,4,5,2,2,2,4,4,2,2,2,1,2,5,2,1,1,4,3
+Engineering,Doctoral Student,1,Go to Industry,3,2,2,1,1,1,3,3,3,3,3,3,2,3,2,2,2,2,2,1,1,1,1
+Biology/Bioinformatics,Doctoral Student,2,Go to Industry,4,4,2,5,5,1,2,2,4,4,5,5,5,3,3,3,3,2,4,3,3,4,4
+Engineering,Masters Student,1,Go to Industry,2,2,4,3,2,4,3,3,3,5,5,4,2,2,2,2,3,4,2,2,3,5,4
+Mathematics/Statistics,Masters Student,2,Go to Industry,2,2,4,2,3,4,4,4,4,3,3,3,3,4,4,3,3,2,4,4,2,4,4
+Engineering,Masters Student,2,Go to Industry with possibility of going back for a PhD later ,1,1,1,4,1,3,4,3,3,4,4,4,1,4,3,4,4,4,1,2,3,1,1
+Engineering,Doctoral Student,1,Go to Academia,4,4,5,4,4,4,4,5,3,5,3,3,3,3,3,3,5,5,4,4,4,4,4
+Engineering,Masters Student,2,Do a Masters or PhD Program,3,4,4,4,5,3,2,3,3,5,5,5,4,3,2,3,3,3,2,4,1,3,3
+Business/Quant Marketing,Doctoral Student,4,Go to Academia,4,4,5,5,4,2,2,1,2,3,5,5,4,3,3,3,3,2,5,4,5,5,5
+Data Science,Undergraduate Student,2,Go to Industry,3,3,4,4,2,3,3,4,3,5,4,5,3,3,3,2,3,1,4,4,1,3,3
+Mathematics/Statistics,Undergraduate Student,2,Go to Academia,2,3,4,5,3,3,5,4,3,4,5,5,2,3,3,3,3,2,4,1,1,4,1
+Engineering,Masters Student,2,Go to Industry,5,4,5,5,4,4,5,5,5,5,5,5,4,4,1,4,2,1,1,1,1,1,1
+Engineering,Masters Student,2,Continue work in national laboratory system,4,5,3,5,5,4,3,2,3,5,5,5,5,2,3,3,3,3,4,2,3,3,5
+Mathematics/Statistics,Masters Student,2,Do a Masters or PhD Program,3,4,4,5,5,4,4,5,5,3,5,5,5,4,3,4,4,3,5,4,4,4,4
+Mathematics/Statistics,Masters Student,2,Go to Industry,5,3,5,5,3,2,3,3,2,5,5,5,5,5,4,4,3,3,5,3,4,5,5
+Biology/Bioinformatics,Masters Student,1,Do a Masters or PhD Program,4,3,4,5,4,3,3,3,3,2,5,3,3,3,3,3,4,3,5,4,1,2,3
+Mathematics/Statistics,Masters Student,3,Go to Industry,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+Mathematics/Statistics,Undergraduate Student,2,Do a Masters or PhD Program,3,4,3,5,5,3,4,5,5,5,5,4,3,2,2,1,3,2,4,3,2,3,4
+Mathematics/Statistics,Masters Student,2,Go to Industry,4,3,3,5,5,4,3,3,4,4,5,5,5,4,4,2,2,2,4,4,4,4,4
+Engineering,Masters Student,3,Go to Industry,3,5,4,4,3,3,4,5,5,5,5,4,3,2,2,1,2,3,1,1,2,2,3
+Engineering,Masters Student,2,Go to Industry,2,3,3,2,2,2,3,2,3,3,3,2,1,3,1,3,3,2,3,2,1,2,2
+Engineering,Masters Student,3,Go to Industry,4,2,2,3,3,4,4,2,2,5,5,4,2,4,2,4,5,4,4,2,2,4,4
+Engineering,Undergraduate Student,1,Go to Industry,2,3,4,5,4,5,4,3,3,4,4,4,3,2,2,3,5,5,5,2,3,2,3
+Engineering,Masters Student,5,Go to Industry,3,3,3,4,2,4,2,4,4,5,5,5,5,3,3,4,4,5,5,1,5,4,5
