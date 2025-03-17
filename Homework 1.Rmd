@@ -1,0 +1,304 @@
+---
+title: "STATS 547 Homework 1"
+author: "Ben Tward"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Matrix)
+library(ggplot2)
+library(patchwork)
+library(corrplot)
+```
+
+## Problem 1
+
+(a). Compute $\mathbf{A}^T\mathbf{A}$ and $\mathbf{AA}^T$ and their eigenvalues and unit eigenvectors for $\mathbf{V}$ and $\mathbf{U}$.
+
+$\mathbf{A} = \begin{bmatrix} 1 & 1 & 0 \\ 0 & 1 & 1 \end{bmatrix}$
+
+**Answers to part (a):**
+
+$\mathbf{AA}^T = \begin{bmatrix} 1 & 1& 0\\0&1&1\end{bmatrix} \begin{bmatrix}1&0\\1&1\\0&1\end{bmatrix} = \begin{bmatrix}2&1\\1&2\end{bmatrix}$
+
+$Eigenvalues \, of\, \mathbf{AA}^T =\, 3,\, 1$
+
+$Eigenvectors\, of\, \mathbf{A}^T\mathbf{A} =\, \begin{bmatrix}1\\1\end{bmatrix},\, \begin{bmatrix}-1\\1\end{bmatrix}\,$
+
+$\mathbf{A}^T\mathbf{A} = \begin{bmatrix}1&0\\1&1\\0&1\end{bmatrix}\begin{bmatrix} 1 & 1& 0\\0&1&1\end{bmatrix} = \begin{bmatrix}1&1&0\\1&2&1\\0&1&1\end{bmatrix}$
+
+$Eigenvalues \, of\, \mathbf{A}^T\mathbf{A} =\, 3,\, 1,\, 0$
+
+$Eigenvectors\, of\, \mathbf{A}^T\mathbf{A} =\, \begin{bmatrix}1\\2\\1\end{bmatrix},\, \begin{bmatrix}-1\\0\\1\end{bmatrix}\, ,\begin{bmatrix}1\\-1\\1\end{bmatrix}$
+
+$\mathbf{V}$ will be the unit eigenvectors of $\mathbf{A}^T\mathbf{A}$ and $\mathbf{U}$ will be the unit eigenvectors of $\mathbf{AA}^T$.
+
+$\mathbf{V} = \begin{bmatrix} \frac{1}{\sqrt6} & \frac{-1}{\sqrt2} & \frac{1}{\sqrt3}\\ \frac{2}{\sqrt6} & 0 & \frac{-1}{\sqrt3}\\ \frac{1}{\sqrt6} & \frac{1}{\sqrt2} & \frac{1}{\sqrt3}\end{bmatrix}$
+
+$\mathbf{U} = \begin{bmatrix} \frac{1}{\sqrt2} & \frac{-1}{\sqrt2} \\ \frac{1}{\sqrt2} & \frac{1}{\sqrt2}\end{bmatrix}$
+
+$\mathbf{\Sigma} = \begin{bmatrix} \sqrt3 & 0 & 0 \\ 0 & 1 & 0 \end{bmatrix}$
+
+------------------------------------------------------------------------
+
+(b). Compute the singular values and eigenvalues for the following matrix. Explain your observations.
+
+$\mathbf{A} = \begin{bmatrix} -149 & -50 & -154 \\ 537 & 180 & 546 \\ -27 & -9 & -25 \end{bmatrix}$
+
+**Answers to part (b):**
+
+Clearly it would be a lot of work to calculate the SVD of $\mathbf{A}$ by hand, so I am going to use code.
+
+```{r}
+A = matrix(c(-149, -50, -154,
+               537, 180, 546,
+               -27, -9, -25), 
+             nrow = 3, byrow = TRUE)
+
+eigenA = eigen(A)
+print(eigenA$values)
+
+svdA = svd(A)
+print(svdA$d, digits = 2, scientific=FALSE)
+```
+
+I notice that the first singular value $\sigma_1 = 817.76$ is significantly larger than the other singular values. This means that a lot of the necessary information from $\mathbf{A}$ can be contained in a rank 1 approximation of $\mathbf{A}$.
+
+I notice that the eigenvalues of $\mathbf{A}$ are small and close to each other, while the eigenvalues of $\mathbf{A}^T\mathbf{A}$ ( which are the squared singular values) have large differences.
+
+------------------------------------------------------------------------
+
+(c). Repeat part (b) with the following matrix. Do you observe a similar relationship between the singular values and eigenvalues? What could explain any changes to this relationship?
+
+$\mathbf{A} = \begin{bmatrix} -18 & 150 & -40 \\ 150& 200& 60\\ -40& 60& -116\end{bmatrix}$
+
+**Answers to part (c):**
+
+Again, I am going to use code for this.
+
+```{r}
+A = matrix(c(-18, 150, -40,
+               150, 200, 60,
+               -40, 60, -116), 
+             nrow = 3, byrow = TRUE)
+
+eigenA = eigen(A)
+print(format(eigenA$values, digits = 1))
+
+svdA = svd(A)
+print(format(svdA$d, digits = 2))
+```
+
+This matrix is different in that it does not have such an extreme difference in singular values. Something that may explain this is that the eigenvalues of $\mathbf{A}$ are large and far apart. I also notice that in this case, the absolute value of the eigenvalues of $\mathbf{A}$ are the same as its singular values.
+
+------------------------------------------------------------------------
+
+## Problem 2
+
+(a). How many rows and columns does the data have? What is the rank of the data?
+
+**Answer to part (a):**
+
+```{r include=FALSE}
+setwd("C:\\Users\\Ben\\OneDrive\\Documents\\Class Materials\\STATS 547")
+data = read.csv("MATH 547 Introductions.csv")
+colnames(data) <- sub("^In.this.section.please.indicate.how.comfortable.you.are.with.the.following.topics..1.indicates..beginner..and.5.indicates..expert....Note..Proficiency.in.every.category.is.not.a.barrier.to.entry.for.this.course....", "comfortable", colnames(data))
+colnames(data) <- sub("^In.this.section..please.indicate.how.excited.you.are.by.the.following.topics..1.indicates..not.excited..and.5.indicates..very.excited...", "excited", colnames(data))
+colnames(data) <- sub("^How.many.human.languages.do.you.speak.", "languages.spoken", colnames(data))
+colnames(data) <- sub("^Choose.the.option.that.best.describes.you.", "program", colnames(data))
+colnames(data) <- sub("^Choose.the.best.description.of.your.background.", "major.focus", colnames(data))
+colnames(data) <- sub("^What.do.you.plan.to.do.after.your.program.", "plan", colnames(data))
+```
+
+```{r}
+dim(data)
+
+#Rank of the data excluding categorical variables
+numerics = data[c(3, 5:ncol(data))]
+rankMatrix(numerics)[1]
+```
+
+The data matrix is $80\times27$ (80 student responses, 27 variables). Since I could not process the rank of the matrix when it includes categorical variables (major, program, and future plans), I took the rank of the matrix that only includes numeric responses (languages spoken, ratings for subjects on excitement, and ratings for subjects on comfort). The numeric matrix was $80\times24$ and had a rank $r = 24$.
+
+------------------------------------------------------------------------
+
+(b). On average, are students more excited by ‘singular value decomposition’ or by ‘machine learning’? On average, are students more excited by ‘working with real data’ or with programming?
+
+**Answer to part (b):**
+
+```{r echo=FALSE}
+p1 <- ggplot(data = data[,1:17], 
+             aes(x = factor(excitedSingular.Value.Decomposition.), fill = program)) +
+  geom_bar(position = "stack") +  
+  labs(title = "Excitement for SVD",
+       x = "Rating",
+       y = "Count") +
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  ylim(0, 50)  
+
+p2 <- ggplot(data = data[,1:17], 
+             aes(x = factor(excitedMachine.Learning.), fill = program)) +
+  geom_bar(position = "stack") +  
+  labs(title = "Excitement for ML",
+       x = "Rating",
+       y = NULL) +
+  theme_minimal() +
+  theme(legend.text = element_text(size = 8), 
+        legend.title = element_text(size = 10)) +  
+  ylim(0, 50)  
+
+p1 + p2  
+```
+
+There are more people excited for machine learning than SVD. Each rating has a pretty similar proportion of undergrads to masters to doctorates, except it seems that doctoral students have less excitement for SVD.
+
+```{r echo=FALSE}
+p1 <- ggplot(data = data, 
+             aes(x = factor(comfortableWorking.with.Real.World.Data.))) +
+  geom_bar(position = "stack") +  
+  labs(title = "Comfort Working with Data",
+       x = "Rating",
+       y = "Count") +
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  ylim(0, 50)  
+
+p2 <- ggplot(data = data, 
+             aes(x = factor(comfortableMATLAB.Programming.))) +
+  geom_bar(position = "stack") +  
+  labs(title = "Comfort MATLAB",
+       x = "Rating",
+       y = NULL) +
+  theme_minimal() +
+  theme(legend.text = element_text(size = 8), 
+        legend.title = element_text(size = 10)) +  
+  ylim(0, 50)  
+
+p3 <- ggplot(data = data, 
+             aes(x = factor(comfortablePython.Programming.))) +
+  geom_bar(position = "stack") +  
+  labs(title = "Comfort Python",
+       x = "Rating",
+       y = "Count") +
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  ylim(0, 50)  
+
+p4 <- ggplot(data = data, 
+             aes(x = factor(comfortableR.Programming.))) +
+  geom_bar(position = "stack") +  
+  labs(title = "Comfort R",
+       x = "Rating",
+       y = "Count") +
+  theme_minimal() +
+  theme(legend.position = "none") + 
+  ylim(0, 50)  
+
+p1 + p2 + p3 +p4 
+
+```
+
+It seems that there are mixed ratings on how comfortable people are working with data. There is about an equal distribution of comfort levels of programming in MATLAB. Most people are more comfortable with Python as their method of programming, while R is bi-modal with people either a 1 or 4 on a scale of comfort from 1-5.
+
+------------------------------------------------------------------------
+
+(c). Create a plot showing the relationship between students’ interests and their current skills. You may choose any relationship you like, and any plot type you like. Please explain your observations from the plot you generate.
+
+**Answer to part (c):**
+
+```{r}
+cor_matrix = cor(numerics, use = "complete.obs")
+corrplot(cor_matrix, method = "color", type = "lower", 
+         tl.pos = TRUE, tl.cex = .5, tl.col = "black", tl.srt = 45,
+         addCoef.col = "black", number.cex = .2)
+```
+
+This is a correlation matrix between the survey response variables $x_1 ... x_{24}$. The areas that are deeper blue have a more positive association (as $x_i$ increases, $x_j$ increases) and the areas that are deeper red have a more negative association (as $x_i$ increases, $x_j$ decreases).
+
+I notice that near the diagonal, the relationship between variables tend to have a stronger positive correlation, which suggests that adjacent questions on the survey tend to have similar responses. As questions become further away from each other, the relationships become weaker. This is an interesting observation about the importance of ordering in survey design.
+
+Some of the most negative associations (albeit weak) include whether people are comfortable with programming and excitement for complex topics such as dynamical systems, control theory, or data topology.
+
+------------------------------------------------------------------------
+
+(d). Compute SVD of $\mathbf{A} = \mathbf{U}\mathbf{\Sigma}\mathbf{V}^T$. What are the sizes of the matrices $\mathbf{U}$, $\mathbf{\Sigma}$, and $\mathbf{V}$?
+
+**Answer to part (d):**
+
+I am only using the numeric data for this analysis, so the dimension of $\mathbf{A}$ is $80\times24$.
+
+```{r}
+svdA = svd(numerics)
+U = svdA$u
+S = svdA$d
+V = svdA$v
+```
+
+The dimensions are as follows: $\mathbf{U}_{80\times24}$, $\mathbf{\Sigma}_{24\times24}$, $\mathbf{V}_{24\times24}$. Usually, $\mathbf{\Sigma}$ should be the same dimensions as $\mathbf{A}$, but I learned that in R they do a "Reduced SVD" where $\mathbf{\Sigma}$ is a square diagonal matrix containing the singular values.
+
+------------------------------------------------------------------------
+
+(e). Create a scree plot of the singular values of $\mathbf{A}$. Does this change your mind about the rank of $\mathbf{A}$ from part (a)?
+
+**Answer to part (e):**
+
+```{r}
+plot(S, 
+     type = "b", 
+     main = "Scree Plot of Singular Values", 
+     xlab="Component Number", 
+     ylab = "Singular Value")
+```
+
+It seems that the first principal component is much larger than the other ones, meaning that this data may be efficiently reduced to a rank-1 approximation.
+
+------------------------------------------------------------------------
+
+(f). Compute $\mathbf{A}^T\mathbf{A}$ and $\mathbf{{AA}}^T$. Plot both $\mathbf{A}^T\mathbf{A}$ and $\mathbf{{AA}}^T$. One option is to use MATLAB’s function "imagesc." Please explain your observations. What is the size of each of these matrices? What do these matrices represent?
+
+**Answer to part (f):**
+
+```{r}
+A = data.matrix(numerics)
+image(t(A) %*% A, main = "ATA")
+image(A %*% t(A), main = "AAT")
+```
+
+$\mathbf{A}^T\mathbf{A}$ has dimension $24\times24$ and $\mathbf{{AA}}^T$ has dimension $80\times80$. The plot of $\mathbf{A}^T\mathbf{A}$ shows the correlation/magnitude of the associations between the 24 variables in the survey, and $\mathbf{AA}^T$ shows the correlation/magnitude of the associations of the shared interests between the 80 people who responded to the survey.
+
+I notice that in the association between variables ($\mathbf{A}^T\mathbf{A}$), there are areas (subjects) that show high values and have strong positive association with some neighboring variables. This pattern manifests to make a dark red plus sign.
+
+In the associations between students, there is not so much of a pattern but I do notice some areas with darker bands, meaning that there are some students who share similar interests or skills to other students.
+
+------------------------------------------------------------------------
+
+(g). Take the SVD of $\mathbf{A}^T\mathbf{A}$ and $\mathbf{AA}^T$. Compare the values in $\mathbf{\Sigma}$ from each matrix. What do you notice? How do these values relate to the singular values of $\mathbf{A}$ from part (d)?
+
+**Answer to part (g):**
+
+```{r}
+svd.AtA = svd(t(A) %*% A)
+ata.u = svd.AtA$u
+ata.s = svd.AtA$d
+ata.v = svd.AtA$v
+
+svd.AAt = svd(A %*% t(A))
+aat.u = svd.AAt$u
+aat.s = svd.AAt$d
+aat.v = svd.AAt$v
+
+#Compare the first 24 singular values of ATA and AAT
+round(ata.s - aat.s[1:length(ata.s)], digits=1)
+```
+
+We can see that the first 24 values of $\mathbf{A}^T\mathbf{A}$ and $\mathbf{AA}^T$ are the same (the differences are 0).
+
+```{r}
+#Compare the 24 singular values to ATA and A
+round(ata.s - S^2, digits = 1)
+```
+
+I almost immediately noticed that it seemed like the singular values of $\mathbf{A}^T\mathbf{A}$ were the squared singular values of $\mathbf{A}$. From this code, we can see that this is indeed the truth.

@@ -1,0 +1,359 @@
+---
+title: "STATS 547 Homework 2"
+author: "Ben Tward"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(fig.width=7, fig.height=4) 
+
+```
+
+### Background
+
+Time-dependent phenomena underlie many areas of scientific research. Recent developments in technology enable efficient collection of time series data. Gaining insight into these data requires application of innovative algorithms. We will introduce a beautiful technique called dynamic mode decomposition (DMD), which was first introduced by Schmid and Sesterhenn in 2008 [1]. DMD is a data-driven and model-free algorithm extracting spatio-temporal patterns in the form of so-called DMD modes and DMD eigenvalues. DMD has been investigated on both practical and theoretical grounds. First I will give you a simple prototype example motivated by Alan Turing. Here we model dynamics of a single cell with two proteins as an Andronov-Hopf oscillator, which has the form
+
+$\frac{dx}{dt} = -(x^2 + y^2)x + ax-by$ (1a)
+
+$\frac{dy}{dt} =-(x^2 + y^2)y + ay-bx$ (1b)
+
+$a, b >0$
+
+where, $x,y \in\mathbb{R}$ can be interpreted as concentrations of the proteins in the cell. To give a graphical illustration, we numerically integrate Equation 1a and 1b. Figure 1 shows the graph of $x(t)$ and $y(t)$ and plots the solutions in a phase plane.
+
+|                                                   |
+|:-------------------------------------------------:|
+| ![](images/clipboard-2553415229.png){width="400"} |
+
+Figure 1: Dynamics of a single cell. Left: Blue ($x(t)$) and red ($y(t)$) represent protein concentrations in a single cell. The initial conditions are $(x(0), y(0)) = (0.1, -0.1)$, and $a = b = 1$. Right: The solutions in a phase plane.
+
+Now we extend this formulation to two cells, separated by a membrane, that each have the same two proteins, using Equations 1a and 1b with $a = 1, b = 1$. The two cells are coupled in the following way:
+
+Cell 1: (2a)
+
+$\frac{dx_1}{dt} =-({x_1}^2 + {y_1}^2){x_1} + {x_1} - {y_1} + c({x_2}- {x_1})$
+
+$\frac{dy_1}{dt} =-({x_1}^2 + {y_1}^2){y_1} + {y_1} - {x_1} + c({y_2} - {y_1})$
+
+Cell 2: (2b)
+
+$\frac{dx_2}{dt} = -({x_2}^2 + {y_2}^2){x_2} + {x_2} - {y_2} + c({x_1} - {x_2})$
+
+$\frac{dy_2}{dt} = -({x_2}^2 + {y_2}^2){y_2} + {y_2} - {x_2} + c({y_1} - {y_2})$
+
+where for protein $x$, $x_1$ is the protein concentration for cell 1, and $x_2$ is the protein concentration for cell 2, and likewise for $y_1$ and $y_2$ for cells 1 and 2. This coupling is called Turing-type coupling, where $c>0$ is the coupling parameter.
+
+Now we show the results of a numerical study of System 2 for different values of $c$ and initial conditions. Figure 2 (bottom) shows that when two cells are coupled, ${x_1}(t) = x_2(t) = x(t)$ and $y_1(t) = y_2(t) = y(t)$. We then say the proteins are “Beating in Unison,” that is two proteins $x(t)$ and $y(t)$ oscillate in phase synchronization.
+
+|                                                  |
+|:------------------------------------------------:|
+| ![](images/clipboard-979915277.png){width="400"} |
+
+Figure 2: Dynamics of two cells. The initial conditions are $(x_1, y_1, x_2, y_2) = (0.1, -0.1, -0.5, 1)$. Top: $c = 0$, bottom: $c = 0.1$. Red, protein $x$; blue, protein $y$; solid line, cell 1; dotted line cell 2. Right panels are phase planes. Solid line is cell 1 $(x_1, y_1)$; dotted line is cell 2 $(x_2, y_2)$.
+
+Figure 3 is an example of two proteins that are not Beating in Unison. This system is a special case where the initial conditions are opposite $(0.1, -0.1, -0.1, 0.1)$. The eigenvalues of the Jacobian matrix at $(0, 0, 0, 0)$ are $1 -2c-i, 1-2c+i, 1-i$, and $1 + i$. When $c > 0.5$, the eigenvalues $1 -2c-i$ and $1 -2c+i$ have negative real parts. The corresponding eigenvectors are $(1, -1, -i, 1),(-1, -1, -i, 1),(-1, 1, -i, 1),(1, 1, i, 1)$.
+
+|                                                   |
+|:-------------------------------------------------:|
+| ![](images/clipboard-3843028372.png){width="400"} |
+
+Figure 3: Dynamics of two cells. Initial conditions are $(x_1, y_1, x_2, y_2) = (0.1, -0.1, -0.1, 0.1)$. Top: $c = 0$, middle: $c = 0.1$, bottom: $c = 0.6$. Red, protein $x$; blue, protein $y$; solid line, cell 1; dotted line cell 2. Right panels are phase planes. Solid line is cell 1 $(x_1, y_1)$; dotted line is cell 2 $(x_2, y_2)$.
+
+------------------------------------------------------------------------
+
+### DMD Algorithm
+
+1.  Compute the SVD of the first data matrix, $\mathbf{X} = \mathbf{U{\Sigma}V^T}$. Remember that DMD uses a sequence of snapshots
+
+    $\mathbf{X} = [\mathbf{x_1}, \mathbf{x_2}, ..., \mathbf{x_{m-1}}] \in n\times {m-1}$
+
+    $\mathbf{X^`} = [\mathbf{x_2}, \mathbf{x_3}, ..., \mathbf{x_m}] \in n\times {m-1}$
+
+2.  We may now make the substitution into $\mathbf{X^`} = \mathbf{AX}$ and write $\mathbf{X^`} = \mathbf{AU{\Sigma}V^T}$.
+
+3.  Define $\tilde{\mathbf{A}} \overset{\Delta}{=} \mathbf{U^T{AU}} = \mathbf{U^T{X^`}V{\Sigma}^{-1}}$.
+
+4.  Compute the eigendecomposition of $\tilde{\mathbf{A}}$
+
+    $\tilde{\mathbf{A}}\mathbf{W} = \mathbf{W{\Lambda}}$
+
+    where $\mathbf{W}$ is the matrix of eigenvectors, and $\mathbf{\Lambda}$ is the diagonal matrix of eigenvalues. Each eigenvalue ${\lambda}_i$ is a DMD eigenvalue.
+
+5.  Compute the DMD modes, $\mathbf{\Phi} \overset{\Delta}{=} \mathbf{{X^`}V{\Sigma}^{-1}W}$. Each column of $\mathbf{\Phi}$ is a DMD mode $\phi$ corresponding to eigenvalue ${\lambda}_i$.
+
+Note: You may need to install packages from MATLAB to run DMD. MATLAB should prompt you if the packages are missing and direct you on how to install them. These packages should be free to download once you have confirmed that your account is associated with the university.
+
+------------------------------------------------------------------------
+
+Here is my implementation of DMD in R based on Joshua Proctor's DMD code in MATLAB.
+
+```{r}
+#DMD function definition
+DMD <- function(dataMatrix, thresh=0.9) {
+  
+  #Prepare X and X'
+  m = dim(dataMatrix)[2]
+  X = dataMatrix[, 1:(m-1)]
+  Xp = dataMatrix[, 2:m]
+  
+  #Compute the SVD of X
+  svdX = svd(X)
+  U = svdX$u
+  d = svdX$d
+  S = diag(svdX$d)
+  V = svdX$v
+  
+  #Thresholding singular values
+  r = which(cumsum(d / sum(d)) > thresh)[1]
+  
+  #Compute A tilde
+  A.tilde = t(U[,1:r]) %*% Xp %*% V[,1:r] %*% solve(S[1:r,1:r])
+  
+  #Eigendecompostion of A tilde
+  eigs = eigen(A.tilde)
+  Lambda = eigs$values
+  W = eigs$vectors
+  
+  #Compute the dynamic modes
+  Phi = Xp %*% V[,1:r] %*% solve(S[1:r,1:r]) %*% W
+  
+  #Return values
+  return_list = list(Atilde = A.tilde, lambda = Lambda, W = W, Phi = Phi)
+  return(return_list)
+  
+}
+```
+
+------------------------------------------------------------------------
+
+### Exercise 1 (DMD Theory)
+
+(a) Building on the DMD note set, derive the following properties of DMD. Given a $n \times m$ data matrix $\mathbf{X}$ with $m$ measurements on $n$ samples, DMD is performed to obtain $\tilde{\mathbf{A}}$ with has eigenvalues $\mathbf{\Lambda}$ and eigenvectors $\mathbf{W}$ and DMD modes $\mathbf{\Phi}$. Given a time point $\mathbf{x}_t$, write $\mathbf{x}_{t+1}$ in terms of the DMD modes $\mathbf{\Phi}$ and eigenvalues of $\tilde{\mathbf{A}}$.
+
+From the Kutz reading [2]:
+
+We can begin by saying that $\mathbf{x}_t = \mathbf{{\Phi}b}_t$ where $\mathbf{b}_t$ is the representation of $\mathbf{x}_t$ in the DMD mode basis. With that fact, we can say that $\mathbf{b}_t = \mathbf{\Phi}^{\dagger}\mathbf{x}_t$.
+
+Using the DMD modes and eigenvalues, we can say that $\mathbf{x}_{t+1} = \mathbf{\Phi \Lambda b}_t = \mathbf{\Phi \Lambda \Phi^{\dagger}x}_t$.
+
+### Exercise 2 (Synthetic Data)
+
+Run the first section of PS3.m in MATLAB with the following initial conditions and parameters. Then, answer the below questions.
+
+Initial Conditions:
+
+$(x_1, y_1, x_2, y_2) = (0.1, -0.1, -0.5, 1)$ and $c = 0$
+
+$(x_1, y_1, x_2, y_2) = (0.1, -0.1, -0.5, 1)$ and $c = 0.1$
+
+$(x_1, y_1, x_2, y_2) = (0.1, -0.1, -0.1, 0.1)$ and $c = 0.6$
+
+**(a) Show the outputs (save figures as images and add to your submission document) and explain what you observe. Are there any relationships between the subplots within each figure?**
+
++:-------------------------------------------------------------------------------------------------------------------------------------------:+
+| ![](images/clipboard-586415566.png){width="400"}                                                                                            |
+|                                                                                                                                             |
+| Under these initial conditions, the system oscillates but they are all asynchronous in their signal output.                                 |
++---------------------------------------------------------------------------------------------------------------------------------------------+
+| ![](images/clipboard-1749831953.png){width="400"}                                                                                           |
+|                                                                                                                                             |
+| The cells beat in unison here, and we can see that the variable phase in the first dynamic mode has $x_1$ near $x_2$, and $y_1$ near $y_2$. |
++---------------------------------------------------------------------------------------------------------------------------------------------+
+| ![](images/clipboard-1078351880.png){width="400"}                                                                                           |
+|                                                                                                                                             |
+| All values converge to 0.                                                                                                                   |
++---------------------------------------------------------------------------------------------------------------------------------------------+
+
+**(b) Compare the three figures. Identify and explain any differences you notice that were caused by manipulating the parameters and initial conditions.**
+
+If we set the initial conditions for each cell to be opposite from each other and set a high enough coupling parameter $c$, the system will converge to the origin. When $c=0$, there is a mismatch between the protein states for the cells, where as when $c=0.1$, $x_1$ and $x_2$ beat in unison as well as $y_1$ and $y_2$. This shows that even when cells do not start with the same protein concentrations, having some amount of coupling will allow them to reach phase synchronization. Under those same conditions, if the cells are not coupled (i.e. $c=0$), the protein concentrations will never reach phase synchronization between cells. Since the eigenvalues of $\tilde{\mathbf{A}}$ are on the unit circle, we can see that the system will oscillate, whereas if the eigenvalues fall within the circle the system will converge to 0.
+
+### Exercise 3 (Fluid Dynamics)
+
+Read Section 2.3 of an example application of DMD to Fluid Dynamics in the DMD Book. The associated data and code of this example have been provided in the problem set MATLAB starter code. Run and follow the MATLAB code to generate similar plots seen in the example (Note: the starter code should generate different plots than are in the book). Include your figures and answer the following questions in your write up:
+
++:---------------------------------------------------------------:+:---------------------------------------------------------------------:+
+| ![](images/clipboard-3157741678.png)                            | ![](images/clipboard-2048002636.png)                                  |
++-----------------------------------------------------------------+-----------------------------------------------------------------------+
+| ![](images/clipboard-2969224819.png)                            | ![](images/clipboard-2303197201.png)                                  |
++-----------------------------------------------------------------+-----------------------------------------------------------------------+
+| ![](images/clipboard-2064805930.png)                            | ![](images/clipboard-3919412510.png)                                  |
++-----------------------------------------------------------------+-----------------------------------------------------------------------+
+| ![](images/clipboard-1425911032.png)                            | ![](images/clipboard-2265944732.png)                                  |
++-----------------------------------------------------------------+-----------------------------------------------------------------------+
+| ![](images/clipboard-2814996557.png)                            | ![](images/clipboard-2646244704.png)                                  |
++-----------------------------------------------------------------+-----------------------------------------------------------------------+
+| ![](images/clipboard-2733989776.png)                            | ![](images/clipboard-2116470477.png)                                  |
++-----------------------------------------------------------------+-----------------------------------------------------------------------+
+| *Left: Real components of DMD modes 10, 12, 14, 16, 18, and 20* | *Right: Imaginary components of DMD modes 10, 12, 14, 16, 18, and 20* |
++-----------------------------------------------------------------+-----------------------------------------------------------------------+
+
+|                                                   |
+|:-------------------------------------------------:|
+| ![](images/clipboard-3679363291.png){width="400"} |
+| ![](images/clipboard-995333655.png){width="400"}  |
+| ![](images/clipboard-471160246.png){width="400"}  |
+| ![](images/clipboard-3301961216.png){width="400"} |
+| *Proper Orthogonal Decomposition (POD) modes 1-4* |
+
+**(a) What do the eigenvalues of** $\tilde{\mathbf{A}}$ **indicate about the cylindrical wake flow?**
+
+The eigenvalues of $\tilde{\mathbf{A}}$ seem to measure the vortex force of the cylindrical wake flow. In this example, the real eigenvalue ${\lambda}_1 \approx 1$ has meaningfulness in that it shows the primary shedding pattern of the fluid. As we look further along the DMD modes, the vortex pattern becomes wider and filled with smaller concentrations of vortexes. We can observe a similar pattern emerge from the POD modes, but it only captures the larger dynamics of the system and not the full temporal picture.
+
+**(b) What are the relative advantages and disadvantages between DMD and POD in this case?**
+
+If we want to go deeper into time and get a more nuanced view of the time dynamics of the system, DMD excels compared to POD. However, POD is a much computationally cheaper and efficient way to capture the the essence of the dynamic, though it is limited to one snapshot of time. DMD is able to capture the temporal-spatial dynamic of the vortex shedding.
+
+### Exercise 4 (Neuroscience)
+
+Run the Section 4 of PS2 starter code.m in MATLAB. Read Chapter 12.3 of Dynamic Mode Decomposition: Data-Driven Modeling of Complex Systems [2], which explains the data and methods of augmenting $\mathbf{X}$ and $\mathbf{Xaug}$ prior to computing DMD. More details on the augmentation of data in this example can be found in Chapter 7.
+
+**(a) Show the outputs (save figures as images and add to your submission document) and explain what you observe. What are the relationships between the subplots within each figure?**
+
++:-----------------------------------------------------------------------------------:+
+| ![](images/clipboard-2791529464.png){width="400"}                                   |
+|                                                                                     |
+| *Visualization of the* $\mathbf{X}$*.* $x$ *axis is time,* $y$ *axis is the sensor* |
++-------------------------------------------------------------------------------------+
+
++:---------------------------------------------------:+
+| *![](images/clipboard-3540852702.png){width="400"}* |
+|                                                     |
+| *Plots for* $\mathbf{X}$                            |
++-----------------------------------------------------+
+| *![](images/clipboard-4244158139.png){width="400"}* |
+|                                                     |
+| *Plots for* $\mathbf{Xaug}$                         |
++-----------------------------------------------------+
+
+**(b) Compare the figures generated using Xaug and X. Identify and explain any differences that occurred after augmenting the data.**
+
+After augmenting the data, the real vs imaginary eigenvalues of $\tilde{\mathbf{A}}$ are more varied along the unit circle, whereas in the original data the eigenvalues were located slightly within the unit circle. This indicates that, under the time-shifted data, the system oscillates over time.
+
+The top right plots show that when $\mathbf{X}$ is not augmented, the modes decay ($\omega < 0$) and it seems to only perceive frequencies near 0. However, with $\mathbf{Xaug}$, since the time is shifted, we can see that the modes are slower to decay. We can also see that the modes with lower frequencies (near 0) have $\omega$ close to 0, meaning that the low frequency signals oscillate for longer.
+
+Finally, we can see that under the time-shifted data, the DMD has a better representation of the signal over time (slower decay) than when it is not time shifted.
+
+**(c) What are the main advantages and disadvantages of this data augmentation process?**
+
+The main advantage of this data augmentation is that it increases the rank of the matrix and allows us to capture dynamics further along in time. However, a downside to this augmentation is that the temporal horizon decreases, so the DMD modes can only reflect a shorter time window. In other words, we are decreasing the scope of our dynamic inference but allowing ourselves to see the perspective of data further along in time.
+
+### Exercise 5 (Mouse Data)
+
+For this exercise, you will work with time series mouse endomicroscopy neuronal data. Run the Section 5 of PS2 starter code.m in MATLAB which preforms DMD on the data.
+
+**(a) Show the outputs.**
+
+|                                                   |
+|:-------------------------------------------------:|
+| ![](images/clipboard-1753794621.png){width="400"} |
+
+**(b) Interpret the results in context.**
+
+The eigenvalues of $\tilde{\mathbf{A}}$ fall onto the unit circle, meaning that the firing of the mouse neurons will oscillate. The measurements are taken when a mouse is fed, fasting, and is fed again. The oscillatory dynamic mode indicates that this specific neural activity is elevated when feeding and suppressed while fasting.
+
+### Exercise 6 (EEG Data)
+
+For this exercise, we will work with implementing DMD on data with multiple samples. For this exercise, we will only look at the first patient.
+
+**(a) What is the dimension of the data?**
+
+The data is $64 \times 160$ of the form signal $\times$ time.
+
+**(b) What is the rank of each matrix? Why is this information important for DMD?**
+
+Each matrix is rank 64. This is important because each sensor is providing information that is not redundant, so we can extract as much information as possible when looking at the dynamics evolve under each sensor.
+
+**(c) Perform DMD on both the eyes open and closed data sets, compare the results. Include eigenvalue plots of your linear approximation.**
+
+```{r warning=FALSE, include=FALSE}
+library(R.matlab)
+path = "C:\\Users\\Ben\\OneDrive\\Documents\\Class Materials\\STATS 547\\Problem Set 2 Code and Data\\Problem Set 2 Code and Data\\data\\BCI2000.mat"
+data = readMat(path)
+
+#Format the data
+open = data$data[1]
+closed = data$data[2]
+
+eyes.open = as.matrix(open[[1]])
+dim(eyes.open) <- c(64, 160, 109)
+
+eyes.closed = as.matrix(closed[[1]])
+dim(eyes.closed) <- c(64, 160, 109)
+
+eyes.open = eyes.open[,,1]
+eyes.closed = eyes.closed[,,1]
+
+theta <- seq(0, 2*pi, length.out = 100)
+```
+
+```{r echo=FALSE}
+par(mfrow=c(1,1))
+matplot(t(eyes.open), type = "l", lty = 1, col = rainbow(64), 
+        xlab = "Time", ylab = "Signal", main = "Signals over Time")
+mtext("Eyes Open", outer = FALSE)
+matplot(t(eyes.closed), type = "l", lty = 1, col = rainbow(64), 
+        xlab = "Time", ylab = "Signal", main = "Signals over Time")
+mtext("Eyes Closed", outer = FALSE)
+```
+
+```{r echo=FALSE, warning=FALSE}
+
+#Decompose Open Eyes
+dmd.open = DMD(eyes.open)
+lambda.open = dmd.open$lambda
+Phi.open = dmd.open$Phi
+
+par(mfrow=c(1,2))
+
+# Eigenvalues of A tilde
+plot(Re(lambda.open), Im(lambda.open), xlab="Real", ylab="Imaginary", 
+     main="Eigenvalues of A tilde", asp = 1, pch=4, col="red",
+     xlim = c(-1, 1), ylim = c(-1, 1))
+lines(cos(theta), sin(theta), col="grey", lwd=2, lty=2)
+abline(h=0, v=0, col="black", lty=3)
+mtext("Eyes Open", outer = FALSE)
+
+# First dynamic mode
+plot(Re(Phi.open[,1]), Im(Phi.open[,1]), xlab="Real", ylab="Imaginary", 
+     main="First dynamic mode", asp = 1, pch=4, col="red",
+     xlim = c(-1, 1), ylim = c(-1, 1))
+lines(cos(theta), sin(theta), col="grey", lwd=2, lty=2)
+abline(h=0, v=0, col="black", lty=3)
+mtext("Eyes Open", outer = FALSE)
+```
+
+```{r, echo=FALSE, warning=FALSE}
+par(mfrow = c(1,2))
+#Decompose Closed Eyes
+dmd.closed = DMD(eyes.closed)
+lambda.closed = dmd.closed$lambda
+Phi.closed = dmd.closed$Phi
+
+
+# Eigenvalues of A tilde
+plot(Re(lambda.closed), Im(lambda.closed), xlab="Real", ylab="Imaginary", 
+     main="Eigenvalues of A tilde", asp = 1, pch=4, col="red",
+     xlim = c(-1, 1), ylim = c(-1, 1))
+lines(cos(theta), sin(theta), col="grey", lwd=2, lty=2)
+abline(h=0, v=0, col="black", lty=3)
+mtext("Eyes Closed", outer = FALSE)
+
+# First dynamic mode
+plot(Re(Phi.closed[,1]), Im(Phi.closed[,1]), xlab="Real", ylab="Imaginary", 
+     main="First dynamic mode", asp = 1, pch=4, col="red",
+     xlim = c(-1, 1), ylim = c(-1, 1))
+lines(cos(theta), sin(theta), col="grey", lwd=2, lty=2)
+abline(h=0, v=0, col="black", lty=3)
+mtext("Eyes Closed", outer = FALSE)
+```
+
+From these plots, we can say that there is a more diverse range of whether or not certain sensors will oscillate or converge based on the eigenvalues of $\tilde{\mathbf{A}}$. We can definitely see from the Signals over Time plots that some signals oscillate, while others remain relatively stable. We cannot visualize the magnitude of the dampening of the oscillations, although the eigenvalues suggest that some signals dampen and converge. When I set the singular value noise thresholding lower, I noticed that the initial eigenvalues of $\tilde{\mathbf{A}}$ fall closer to the unit circle. This may signify that the "most important" signals of the system tend to oscillate.
+
+### References
+
+[1] Peter Schmid and Joern Sesterhenn. Dynamic Mode Decomposition of numerical and experimental data. In APS Division of Fluid Dynamics Meeting Abstracts, volume 61 of APS Meeting Abstracts, page MR.007, November 2008.
+
+[2] J Nathan Kutz, Steven L Brunton, Bingni W Brunton, and Joshua L Proctor. Dynamic mode decompo- sition: data-driven modeling of complex systems. SIAM, 2016.

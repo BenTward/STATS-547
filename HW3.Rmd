@@ -1,0 +1,404 @@
+---
+title: "MATH 547 Homework 3"
+author: "Ben Tward"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(R.matlab)
+library(igraph)
+library(ggplot2)
+```
+
+# Exercise 1 (k-means)
+
+Implement the k-Means Clustering Algorithm in any language of your choice according to the following pseduocode. Once implemented, apply your algorithm on the Fisher-Iris data set and visualize the results. Include your plots, and answer the below questions.
+
+![](images/clipboard-4025398898.png)
+
+Lines 4 and 8 of the k-Means algorithm rely on the notion of closeness or distance between data points. This may be computed with standard Euclidean distance but often other metrics or kernel functions are used to measure the closeness of data for k-Means. Because k-Means may utilize a variety of distance metrics, it is a very popular, effective algorithm.
+
+Data: Fisher’s Iris data [1] is a classical data set used for introductory clustering and supervised learning problems. The data contain 4 measurements (length and width measurements on the sepals and petals) for three (i.e. k = 3) similar types of flowers. Two types of the flowers are linearly inseparable from one another while the third set of samples can be separated. This data set is built into MATLAB and may be loaded with the command “load fisheriris”. (Note: in R, this data is loaded with data(iris))
+
+```{r, echo=FALSE}
+set.seed(69)
+```
+
+```{r}
+#Implementation of k means
+kmeans.bt = function(A, k, max_iter = 1000) {
+  n = nrow(A)
+  centroids = A[sample(n, k, replace = FALSE),]
+  cluster = rep(0, n)
+  converged = FALSE
+  iter= 0
+  
+  while (!converged && iter < max_iter) {
+    iter = iter + 1
+    prev_centroids = centroids
+    
+    for (i in 1:n) {
+      diffr <- do.call(rbind, replicate(k, A[i,], simplify = FALSE))
+      dists = rowSums((centroids - diffr)^2)
+      cluster[i] = which.min(dists)
+    }
+    
+    for (j in 1:k) {
+      if (sum(cluster == j) > 0) {
+        centroids[j,] = colMeans(A[cluster == j, , drop = FALSE])
+      }
+    }
+    
+    converged = max(rowSums((centroids - prev_centroids)^2)) < 1e-6 #floating point
+  }
+  
+  return(list(clusters = cluster, centroids = centroids))
+}
+```
+
+```{r}
+data(iris)
+dat = iris[,1:4]
+k = 3
+model = kmeans.bt(dat, k) #Proof its mine
+
+df = as.data.frame(dat)
+df$cluster = as.factor(model$clusters) 
+df$Species = iris$Species 
+
+ggplot(df, aes(x = Petal.Length, y = Petal.Width, color = cluster, shape = Species)) +
+  geom_point(size = 2) +
+  theme_minimal() +
+  labs(title = "Clustering vs. True Species", x = "Petal Length", y = "Petal Width") +
+  scale_color_manual(values = c("red", "blue", "green")) +
+  theme(legend.position = "right")
+```
+
+## **(a) What are the general properties of data that can be clustered well with k-Means?**
+
+K-means works well with data where observations of the same class are generally nearby to each other. It also helps when there is not a lot of overlap between classes. Also if there are not many outliers, since outliers will have high leverage on the centroids. It also helps if the data is linearly separable.
+
+## **(b) What are potential drawbacks of your implementation of k-Means, and how could the algorithm be improved to circumvent these issues?**
+
+The algorithm is sensitive to the initial sample of clusters, and it might converge to a local solution that is not necessarily the globally optimal solution.
+
+## **(c) How can you evaluate the quality of the clusters of your algorithm?**
+
+We can look at the variance within the clusters and also the Euclidian distance between nodes within a cluster. If we are doing the algorithm in a supervised setting like we are now, we can visualize if the clustering found the appropriate labels. However, in an unsupervised settings, we will need to trust that the clustering is appropriate.
+
+## **(d) How do you deal with the random initialization of k-Means?**
+
+There is not much we can do to control the random initialization of the algorithm, so we just have to hope that the algorithm can converge to a globally optimal solution in any case of initial centroids.
+
+# Exercise 2 (Spectral Clustering)
+
+Three variations of spectral clustering algorithms are described in “A tutorial on spectral clustering” (page 399) [2]. The first algorithm is what Luxburg refers to as “Unnormalized spectral clustering”, the second is “Normalized spectral clustering according to Shi and Malik”, and the third is “Normalized spectral clustering according to Ng *et al*”. The version of algorithm 3 shown below is an adapted form of Andrew Ng’s normalized spectral clustering algorithm described in “On spectral clustering: Analysis and an algorithm” [3] which may be helpful for your understanding.
+
+**Data**: Zachary’s Karate Club was a social network first studied in 1972 [4]. Each node represents a club member and each edge represents a social relationship between members.
+
+## **(a) Implement each of the three spectral clustering algorithms discussed in ”A tutorial on spectral clustering.” Choose a value for** $k$ **and run each section of code for that question.**
+
+```{r}
+spectral_clustering = function(S, k, method = c("unnorm", "norm_sym", "norm_rw")) {
+  start = Sys.time()
+  method = match.arg(method)
+  W = S
+  D = diag(rowSums(W))
+  Dinv = diag(1/diag(D))
+  Dsemiinv = diag(1 / sqrt(diag(D)))
+  L = D - W
+  if (method == "unnorm") {
+    La = L
+    eig = eigen(La)
+  } else if (method == "norm_sym") {
+    La = Dsemiinv %*% L %*% Dsemiinv
+    eig = eigen(La)
+  } else if (method == "norm_rw") {
+    La = Dinv %*% L
+    eig = eigen(La)
+  }
+  
+  U = eig$vectors[, (ncol(W) - k + 1):ncol(W)]
+  
+  if (method == "norm_sym") {
+    U = U / sqrt(rowSums(U^2))
+  }
+  
+  # k-means clustering
+  clustering = kmeans(U, k)$cluster
+  end = Sys.time()
+  t = paste(method, " computing time: ", round(end-start, 6))
+  return(list(clusters = clustering, time=t))
+}
+```
+
+## **(b) Plot the results of each clustering algorithm.**
+
+```{r, echo=FALSE}
+path = "C:\\Users\\Ben\\OneDrive\\Documents\\Class Materials\\STATS 547\\data\\data\\karate_club_adj.mat"
+karate = readMat(path)[[1]]
+par(mfrow = c(1,3), mar = c(1,1,2,1))
+g = graph_from_adjacency_matrix(karate, mode = "undirected")
+karate = as.matrix(karate)
+k = 4
+layout_fixed = layout_with_fr(g)
+km = spectral_clustering(karate, k, "unnorm")$clusters
+cluster_colors = rainbow(k)[km]
+plot(g, layout = layout_fixed, vertex.color = cluster_colors, vertex.size = 15, 
+      edge.arrow.size = 0.5,
+     main = "Unnormalized", cex.main = 0.1)
+km = spectral_clustering(karate, k, "norm_sym")$clusters
+cluster_colors = rainbow(k)[km]
+plot(g, layout = layout_fixed, vertex.color = cluster_colors, vertex.size = 15, 
+      edge.arrow.size = 0.5,
+     main = "Norm Symmetric", cex.main = 0.1)
+km = spectral_clustering(karate, k, "norm_rw")$clusters
+cluster_colors = rainbow(k)[km]
+plot(g, layout = layout_fixed, vertex.color = cluster_colors, vertex.size = 15, 
+      edge.arrow.size = 0.5,
+     main = "Norm Random Walk", cex.main = 0.1)
+```
+
+## **(c) Which algorithm performed the best on this data? Which algorithm was the fastest?**
+
+```{r}
+spectral_clustering(karate, k, "unnorm")$t
+spectral_clustering(karate, k, "norm_sym")$t
+spectral_clustering(karate, k, "norm_rw")$t
+```
+
+It depends on the seed, but I think the fastest algorithm is usually the normalized symmetric clustering. I think the explanation for this is that the unnormalized clustering could not converge as quickly to optimal clusters. The eigendecomposition is faster with symmetric matrices. I also think that both of the normalized clustering algorithms worked better than the unnormalized because there is a more equal distribution of groupings.
+
+## **(d) Repeat steps (a)-(c) with different values of** $k$**. What value of** $k$ **do you think worked best and why?**
+
+```{r, echo=FALSE}
+  par(mfrow = c(3,3), mar = c(0,0,2,0), oma = c(3, 3, 3, 3))
+
+k_values <- c(3, 5, 7)
+methods <- c("Unnorm", "Norm sym", "Norm rw")
+titles = c("Unnormalized", "Normalized Symmetric", "Normalized Random Walk")
+for (i in 1:3) {
+  k <- k_values[i]
+  
+  for (j in 1:3) {
+    method <- methods[j]
+    
+    km <- spectral_clustering(karate, k, tolower(gsub(" ", "_", method)))$clusters
+    cluster_colors <- rainbow(k)[km]
+    
+    plot(g, layout = layout_fixed, vertex.color = cluster_colors, vertex.size = 15, 
+         edge.arrow.size = 0.5, main = "", cex.main = 0.1)
+    
+    # Add labels
+    if (i == 1) {
+      title(main = titles[j], line = 0.5, cex.main = 1)
+    }
+    if (j == 1) {
+        mtext(side = 2, line = 2, text = paste("k =", k), cex = 0.8)
+    }
+  }
+}
+
+```
+
+It is difficult to say what the true dynamic of this network is or how closely connected people are, but I think that setting $k=3$ yields a beautiful partitioning of the network. Past that, it becomes quite partitioned. Maybe those values are more accurate in reflecting the social cliques of the karate club, but this is an unsupervised analysis so we can't know for sure.
+
+## **(e) There are two values of** $k$ **that are technically independent in each of the clustering algorithms:** $k_1$ **for the number of eigenvectors and** $k_2$ **for the number of clusters you choose. Vary** $k_1$ **and** $k_2$ **such that they are not equal to each other. Describe your results.**
+
+```{r, echo=FALSE}
+spectral_clustering = function(S, k1, k2, method = c("unnorm", "norm_sym", "norm_rw")) {
+  start = Sys.time()
+  method = match.arg(method)
+  W = S
+  D = diag(rowSums(W))
+  Dinv = diag(1/diag(D))
+  Dsemiinv = diag(1 / sqrt(diag(D)))
+  L = D - W
+  if (method == "unnorm") {
+    La = L
+    eig = eigen(La)
+  } else if (method == "norm_sym") {
+    La = Dsemiinv %*% L %*% Dsemiinv
+    eig = eigen(La)
+  } else if (method == "norm_rw") {
+    La = Dinv %*% L
+    eig = eigen(La)
+  }
+  
+  U = eig$vectors[, (ncol(W) - k1 + 1):ncol(W)]
+  
+  if (method == "norm_sym") {
+    U = U / sqrt(rowSums(U^2))
+  }
+  
+  # k-means clustering
+  clustering = kmeans(U, k2)$cluster
+  end = Sys.time()
+  t = paste(method, " computing time: ", round(end-start, 6))
+  return(list(clusters = clustering, time=t))
+}
+```
+
+It is hidden, but I made a simple adjustment to the spectral_clustering function to accommodate for differing $k_1$ and $k_2$.
+
++-----------------------------+
+| ### Unnormalized            |
++:===========================:+
+| ![](images/unormalized.png) |
++-----------------------------+
+
++----------------------------------+
+| ### **Normalized** **Symmetric** |
++:================================:+
+| ![](images/normsym.png)          |
++----------------------------------+
+
++--------------------------------+
+| ### **Normalized Random Walk** |
++:==============================:+
+| ![](images/normrw.png)         |
++--------------------------------+
+
+The primary observation I have with this experiment is that as we increase the number of eigenvectors $k_1$, the spectral clustering algorithm discovers more distant graphical relationships. What that means is that instead of focusing on nodes in close proximity, it discovers some latent relationship between nodes that may be "further away" graphically. Also, when $k_1$ is small, these algorithms will discover different clusterings of nodes because of the normalization method of the Laplacian.
+
+# Exercise 3 (Hi-C)
+
+Hi-C is a high-throughput genomic and epigenomic technique to capture chromatin conformation (3C) and can be expressed as a graph. Each node in graph corresponds to a genomic loci and the entries represent the number of contacts between two genomic loci. The matlab variable **data_mat**: a $777 \times 777$ weighted adjacency matrix derived from Hi-C data. To ensure the matrix is connected, rows and columns where more than 10% of the entries were zeros were removed from the matrix. Topologically associating domains (TADs) are regions of the genome that exhibit high interaction within themselves and low interaction with regions outside the domain and are natural clusterings of genomic loci. Implement the algorithm described in “Spectral identification of topological domains” [5] and describe your results (include plots).
+
+```{r, echo=FALSE}
+H = read.csv("C:\\Users\\Ben\\OneDrive\\Documents\\Class Materials\\STATS 547\\data\\data\\Q3.csv", header = FALSE)
+
+```
+
+```{r}
+#Input Hi-C, output H_norm
+H_normalize = function(H) {
+  toeplitz_E = function(A) {
+    n = nrow(A)
+    m = ncol(A)
+    E = matrix(0, n, m)
+    for (i in 0:nrow(A)) {
+      diag_vals = A[abs(row(A) - col(A)) == i]
+      diag_mean = mean(diag_vals)
+      E[abs(row(E) - col(E)) == i] = diag_mean
+    }
+    return(E)
+  }
+  E = toeplitz_E(H)
+  Hn = H / E
+  return(Hn)
+}
+
+#Hbar
+{
+a = 0.25
+Hbar = H^a
+}
+
+#Hn input, make Laplacian, Fiedler vector and value output
+get_fv = function(A) {
+  D = diag(rowSums(A))
+  Dsemiinv = diag(1 / sqrt(rowSums(A)))
+  L = as.matrix(D - A)
+  norm_L = Dsemiinv %*% L %*% Dsemiinv
+  eigs = eigen(norm_L, symmetric=TRUE)
+  lambda = eigs$values[length(eigs$values)-1]
+  fv = eigs$vectors[,ncol(eigs$vectors)-1]
+  return(list(vector = fv, value = lambda))
+}
+
+#Fiedler vector input, regions dataframe output
+regions_fv = function(x) {
+  signs = sign(x)
+  rle_obj = rle(signs)
+  tads = data.frame(
+    start = cumsum(c(1, head(rle_obj$lengths, -1))),
+    end = cumsum(rle_obj$lengths)
+  )
+  tads$len = tads$end - tads$start +1
+  return(tads)
+}
+```
+
+```{r}
+# Get H_norm and initial TADs
+H_norm = H_normalize(H)
+fv_hnorm = get_fv(H_norm)$vector
+regions_hnorm = regions_fv(fv_hnorm)
+
+
+# Recursion incoming
+split_tads = function(Hb, tads, thresh=.9, domain_min=5, final_tads = list()) {  
+  tads = tads[tads$len > domain_min, ]
+  
+  if (nrow(tads) > 0) {
+    for (i in 1:nrow(tads)) {
+      s = tads$start[i]
+      e = tads$end[i]
+      H_sub = Hb[s:e, s:e]
+      
+      # Get FV
+      fv_obj = get_fv(H_sub)
+      lambda2 = fv_obj$value  
+      
+      # Recursion
+      if (lambda2 > thresh) {
+        final_tads[[length(final_tads) + 1]] = list(start = s, end = e)
+      } else {
+        # FV subtads
+        sub_fv = fv_obj$vector  
+        subtads = regions_fv(sub_fv)
+        subtads = subtads[subtads$len > domain_min, ]
+        
+        # Adjust indix
+        subtads$start = subtads$start + s - 1
+        subtads$end = subtads$end + s - 1
+        
+        # Recursion
+        final_tads = split_tads(Hb, subtads, 
+                                thresh = thresh, 
+                                domain_min = domain_min, 
+                                final_tads = final_tads)
+      }
+    }
+  }
+  return(final_tads)
+}
+```
+
+```{r, echo=FALSE}
+#Create TADs
+thresh = 0.9
+domain_min = 10
+spectralTADs = split_tads(Hbar, regions_hnorm, thresh = thresh, domain_min = domain_min)
+
+#Plotting
+n = nrow(Hbar)
+
+# Plot the matrix without axes and add a title
+image(1:n, 1:n, t(Hbar[nrow(Hbar):1, ]), ylab = NA, xlab = paste("Threshold = ", thresh, ", Minimum Domain = ", domain_min), main = "Spectral Identified TADs")
+
+# Add red squares for each region
+for (region in spectralTADs) {
+  s <- region$start
+  e <- region$end
+  
+  rect(s - 0.5, n - e + 0.5, e + 0.5, n - s + 0.5, border = "red", lwd = 2)
+}
+```
+
+It is easier to visualize the TADs when looking at the power-transformed matrix $\mathbf{\bar{H}}$. It is clear to see the pattern that the identified TADs create horizontal/vertical bars of color, representing similar levels of expression or association between the genetic loci. Notably, with the minimum domain size of 10, we can also read between the identified TADs and see the crosshatching to visualize TADs that might have been detected with a smaller domain size.
+
+# References
+
+[1] Ronald A Fisher. The use of multiple measurements in taxonomic problems. Annals of eugenics, 7(2):179– 188, 1936.
+
+[2] Ulrike Von Luxburg. A tutorial on spectral clustering. Statistics and Computing, 17(4):395–416, 2007.
+
+[3] Andrew Y Ng, Michael I Jordan, and Yair Weiss. On spectral clustering: Analysis and an algorithm. In Advances in neural information processing systems, pages 849–856, 2002.
+
+[4] Wayne W Zachary. An information flow model for conflict and fission in small groups. Journal of anthropological research, 33(4):452–473, 1977.
+
+[5] Jie Chen, III Hero, Alfred O., and Indika Rajapakse. Spectral identification of topological domains. Bioinformatics, 32(14):2151–2158, 05 2016.
