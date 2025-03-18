@@ -1,0 +1,19 @@
+---
+title: "STATS 547 Homework 4"
+author: "Ben Tward"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+
+## Question 2
+
+```{r, include=FALSE}
+path = "C:\\Users\\Ben\\OneDrive\\Documents\\GitHub\\STATS-547\\ProblemSet4\\mouse_neurons.csv"
+data = read.csv(path)
+```
