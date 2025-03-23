@@ -11,9 +11,42 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Question 1
 
+My proposed method revolves around the idea of padding.
+
+Let $k=\text{max}\{|e| : e\in\mathcal{E}\}$, the maximum cardinality of the set of edges. Then, for every $e$ in $\mathcal{E}$ with $|e|<k$, we add artificial nodes constructed using an averaging technique on the nodes within that edge. This will create a $k$-uniform hypergraph, and we can now construct our supersymmetric adjascency tensor $\text{A} \in \mathbb{R}^{\overbrace{n \times \dots \times n}^{k}}$.
+
+The main advantage of this method is that .... i dont even know.
+
+A disadvantage is that is sucks.
+
 ## Question 2
 
 ```{r, include=FALSE}
 path = "C:\\Users\\Ben\\OneDrive\\Documents\\GitHub\\STATS-547\\ProblemSet4\\mouse_neurons.csv"
-data = read.csv(path)
+mouse_neurons = read.csv(path)
+```
+
+```{r}
+multicor = function(data, method) {
+  R = cor(data)
+  k = ncol(R)
+  eigenvals = eigen(R)$values  
+  
+  if (method == 1) {
+    r = 1 - eigenvals[length(eigenvals)]
+  } else if (method ==2) {
+    r = (1 - det(R))^0.5
+  } else if (method == 3) {
+    r = sd(eigenvals) / sqrt(k)
+  }
+  
+  return(r)
+
+}
+```
+
+Gonna switch to Python so I can use HAT. Except I cant get the package to load.
+
+```{python}
+
 ```
